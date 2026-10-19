@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Garden is a living digital garden inspired by Claude Monet's changing light.">
+  <title>The Garden — in changing light</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #e7eee9;
+      --paper-deep: #d5e4df;
+      --ink: #173b3a;
+      --muted: #58716e;
+      --blue: #7ba4b7;
+      --rose: #dba9a6;
+      --lilac: #b6abc1;
+      --yellow: #dfc783;
+      --deep: #102d2c;
+      --margin: clamp(1.25rem, 4vw, 4.5rem);
+      --gutter: clamp(1rem, 2vw, 2rem);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+      --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+      --t-ui: 240ms;
+      --header-ink: #f2f2e9;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; background: var(--paper); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "DM Sans", sans-serif;
+      font-size: clamp(1.05rem, 1rem + .25vw, 1.18rem);
+      line-height: 1.55;
+      text-rendering: optimizeLegibility;
+      overflow-x: clip;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-underline-offset: .2em; text-decoration-thickness: .08em; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    ::selection { background: var(--rose); color: var(--deep); }
+    :focus-visible { outline: 3px solid var(--rose); outline-offset: 5px; }
+
+    .site-nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.15rem var(--margin);
+      color: var(--ink);
+      mix-blend-mode: normal;
+      transition: color .3s ease, background-color .3s ease, opacity .35s ease, transform .35s var(--ease-out);
+    }
+    .site-nav.is-light { color: var(--ink); background: rgba(231, 238, 233, .88); }
+    .site-nav.is-on-photo { color: #f2f2e9; }
+    .site-nav.is-hidden { opacity: 0; pointer-events: none; transform: translateY(-100%); }
+    .wordmark { font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 1.55rem; letter-spacing: .01em; text-decoration: none; }
+    .nav-links { display: flex; align-items: center; gap: clamp(1rem, 3vw, 3rem); font-size: .86rem; }
+    .nav-links a { text-decoration: none; transition: opacity var(--t-ui) ease; }
+    .nav-links a:hover { opacity: .55; }
+    .menu-toggle { display: none; border: 0; background: transparent; color: inherit; padding: 0; cursor: pointer; }
+
+    .hero-opening { height: 200svh; background: var(--paper); }
+    .hero-stage { position: sticky; top: 0; height: 100svh; overflow: clip; background: var(--paper); }
+    .hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; clip-path: inset(14% 24% 14% 38%); transform: scale(1.12); will-change: clip-path, transform; }
+    .hero-stage::after { content: ""; position: absolute; inset: 0; background: rgba(16, 45, 44, .24); pointer-events: none; opacity: 0; }
+    .hero-copy { position: absolute; inset: auto var(--margin) 11vh; z-index: 2; display: grid; grid-template-columns: 4fr 3fr; gap: var(--gutter); align-items: end; color: var(--ink); will-change: transform, opacity; }
+    .hero-title { margin: 0; max-width: 12ch; font-family: "Cormorant Garamond", serif; font-size: clamp(3.5rem, 8vw, 8.6rem); font-weight: 400; font-style: italic; line-height: .82; letter-spacing: -.04em; text-wrap: balance; }
+    .hero-support { max-width: 28ch; margin: 0 0 .3rem; font-size: clamp(1rem, 1.25vw, 1.3rem); line-height: 1.35; }
+    .hero-support em { font-family: "Cormorant Garamond", serif; font-size: 1.25em; }
+    .hero-action { display: inline-flex; width: fit-content; margin-top: 1.3rem; padding: .75rem 1.15rem; color: var(--deep); background: var(--yellow); border: 0; cursor: pointer; text-decoration: none; transition: transform var(--t-ui) var(--ease-out), background-color var(--t-ui) ease; }
+    .hero-action:hover { background: #ebd79a; transform: translateY(-3px); }
+    .hero-action:active { transform: scale(.97); }
+    .hero-note { position: absolute; left: var(--margin); top: 20%; z-index: 2; max-width: 18ch; color: var(--ink); font-size: .82rem; line-height: 1.35; opacity: .9; }
+    .hero-note span { display: block; margin-top: .45rem; font-family: "Cormorant Garamond", serif; font-style: italic; font-size: 1.25rem; }
+
+    .section { padding: clamp(7rem, 14vw, 13rem) var(--margin); }
+    .intro { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gutter); background: var(--paper); }
+    .intro-image { grid-column: 1 / span 3; width: 100%; height: clamp(20rem, 32vw, 34rem); object-fit: cover; margin-top: 10rem; }
+    .intro-copy { grid-column: 7 / span 6; align-self: start; max-width: 27ch; font-family: "Cormorant Garamond", serif; font-size: clamp(1.8rem, 3.1vw, 3.35rem); line-height: 1.07; }
+    .intro-copy p { margin: 0; text-wrap: pretty; }
+    .intro-note { grid-column: 1 / span 3; align-self: end; max-width: 22ch; margin-top: 1rem; color: var(--muted); font-size: .84rem; line-height: 1.4; }
+
+    .gallery { height: 215svh; padding: 0; background: var(--paper-deep); }
+    .gallery-stage { position: sticky; top: 0; height: 100svh; overflow: clip; padding: 14vh var(--margin) 0; }
+    .gallery-heading { position: relative; z-index: 3; max-width: 13ch; margin: 0 auto; text-align: center; font-family: "Cormorant Garamond", serif; font-size: clamp(2rem, 3.8vw, 4rem); font-weight: 400; font-style: italic; line-height: .94; }
+    .gallery-lead { position: relative; z-index: 3; max-width: 32ch; margin: 1.2rem auto 0; text-align: center; font-size: .96rem; color: var(--muted); }
+    .gallery-images { position: absolute; left: 50%; bottom: -9vh; width: min(1000px, 76vw); height: 76vh; transform: translateX(-50%); }
+    .gallery-images img { position: absolute; bottom: 0; width: 34%; height: 70%; object-fit: cover; will-change: transform; }
+    .gallery-images .gallery-left { left: -10%; transform: translateY(50%) rotate(-2deg); }
+    .gallery-images .gallery-center { left: 33%; z-index: 2; width: 39%; height: 82%; transform: translateY(58%) scale(.82); }
+    .gallery-images .gallery-right { right: -10%; transform: translateY(50%) rotate(2deg); }
+
+    .about { background: #f1e8dc; }
+    .about-head { max-width: 9ch; margin: 0 0 1.2rem; font-family: "Cormorant Garamond", serif; font-size: clamp(3rem, 6vw, 6rem); font-weight: 400; font-style: italic; line-height: .84; }
+    .about-lead { max-width: 34ch; margin: 0 0 4rem; font-size: clamp(1.1rem, 1.6vw, 1.45rem); line-height: 1.35; }
+    .about-grid { display: grid; grid-template-columns: 2fr 1fr; gap: var(--gutter); align-items: start; }
+    .about-figure { position: relative; margin: 0; }
+    .about-figure img { width: 100%; height: clamp(20rem, 42vw, 42rem); object-fit: cover; }
+    .about-caption { position: absolute; right: 0; top: 0; width: min(19rem, 55%); padding: 1.1rem; color: var(--deep); background: var(--yellow); font-family: "Cormorant Garamond", serif; font-size: 1.45rem; line-height: 1.12; }
+    .garden-card { display: grid; gap: 2rem; min-height: 100%; padding: clamp(1.5rem, 4vw, 3rem); color: var(--deep); background: var(--blue); }
+    .garden-card svg { width: 100%; max-height: 190px; }
+    .garden-card path, .garden-card circle { fill: none; stroke: currentColor; stroke-width: 1.5; }
+    .garden-card circle { fill: var(--rose); stroke: none; }
+    .garden-card p { max-width: 19ch; margin: 0; font-family: "Cormorant Garamond", serif; font-size: 1.55rem; line-height: 1.1; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem 1rem; margin-top: auto; font-size: .86rem; }
+    .facts dt { color: rgba(23, 59, 58, .65); }
+    .facts dd { margin: .15rem 0 0; font-size: 1.05rem; }
+
+    .light-room { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); align-items: center; background: var(--paper); }
+    .light-copy h2 { max-width: 9ch; margin: 0 0 1rem; font-family: "Cormorant Garamond", serif; font-size: clamp(2.8rem, 5.4vw, 5.7rem); font-weight: 400; font-style: italic; line-height: .86; }
+    .light-copy p { max-width: 31ch; margin: 0; color: var(--muted); }
+    .mood-switcher { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 2rem; }
+    .mood-switcher button { padding: .55rem .8rem; border: 0; color: var(--ink); background: var(--paper-deep); cursor: pointer; transition: background-color var(--t-ui) ease, color var(--t-ui) ease, transform var(--t-ui) var(--ease-out); }
+    .mood-switcher button:hover, .mood-switcher button.is-active { color: var(--paper); background: var(--ink); }
+    .mood-switcher button:active { transform: scale(.96); }
+    .light-image { margin: 0; }
+    .light-image img { width: 100%; height: min(78svh, 760px); object-fit: cover; transition: filter .8s var(--ease-soft), transform 1.2s var(--ease-soft); }
+    [data-mood="dawn"] .light-image img { filter: saturate(.78) brightness(1.08) hue-rotate(10deg); }
+    [data-mood="noon"] .light-image img { filter: saturate(1.06) brightness(1.02); }
+    [data-mood="dusk"] .light-image img { filter: saturate(.9) brightness(.78) sepia(.12) hue-rotate(325deg); }
+    .light-image figcaption { margin-top: .8rem; color: var(--muted); font-size: .82rem; }
+
+    .triptych { padding: 0; background: var(--deep); }
+    .triptych-row { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .triptych-row img { width: 100%; height: 42svh; object-fit: cover; }
+    .closing-field { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--gutter); align-items: end; min-height: 43svh; padding: clamp(3rem, 7vw, 7rem) var(--margin); color: var(--deep); background: var(--rose); }
+    .closing-field h2 { max-width: 15ch; margin: 0; font-family: "Cormorant Garamond", serif; font-size: clamp(2rem, 3.5vw, 3.8rem); font-weight: 400; font-style: italic; line-height: 1.02; }
+    .closing-field p { max-width: 28ch; margin: 0 0 .25rem; font-size: .95rem; }
+    .closing-field a { text-decoration-thickness: 4px; text-underline-offset: 6px; }
+
+    .site-footer { position: relative; z-index: 1; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; gap: 2rem; padding: 2rem var(--margin) 1.3rem; color: var(--paper); background: var(--deep); }
+    .footer-columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gutter); font-size: .86rem; }
+    .footer-columns p { margin: 0; }
+    .footer-columns strong { display: block; margin-bottom: .55rem; color: var(--paper); font-weight: 500; }
+    .footer-columns span { color: rgba(231, 238, 233, .68); }
+    .footer-close { margin: 0; color: var(--paper); font-family: "Cormorant Garamond", serif; font-size: clamp(2rem, 7vw, 7.5rem); font-style: italic; font-weight: 400; line-height: .78; letter-spacing: -.045em; white-space: nowrap; text-align: center; }
+    .footer-legal { margin: 0; color: rgba(231, 238, 233, .6); font-size: .8rem; text-align: center; }
+
+    .reveal { opacity: 1; transform: none; }
+    .js .reveal { opacity: 0; transform: translateY(24px); }
+    .js .reveal.is-in { opacity: 1; transform: none; transition: opacity .75s var(--ease-out), transform .9s var(--ease-out); }
+    .js .stagger > * { opacity: 0; transform: translateY(18px); }
+    .js .stagger.is-in > * { opacity: 1; transform: none; transition: opacity .7s var(--ease-out), transform .8s var(--ease-out); }
+    .js .stagger.is-in > *:nth-child(2) { transition-delay: 80ms; }
+    .js .stagger.is-in > *:nth-child(3) { transition-delay: 160ms; }
+    .js .stagger.is-in > *:nth-child(4) { transition-delay: 240ms; }
+
+    @media (max-width: 800px) {
+      .nav-links { display: none; }
+      .menu-toggle { display: block; }
+      .site-nav.menu-open .nav-links { position: absolute; inset: 100% 0 auto; display: grid; gap: 1rem; padding: 1.2rem var(--margin) 1.4rem; color: var(--ink); background: var(--paper); }
+      .hero-image { clip-path: inset(21% 12% 21% 12%); }
+      .hero-copy { inset: auto var(--margin) 8vh; display: block; }
+      .hero-title { max-width: 12ch; font-size: clamp(3.5rem, 16vw, 6rem); }
+      .hero-support { margin-top: 1.5rem; font-size: 1rem; }
+      .hero-note { top: 15%; left: var(--margin); }
+      .intro { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+      .intro-copy { grid-column: auto; max-width: 20ch; font-size: clamp(1.85rem, 8vw, 2.65rem); }
+      .intro-image { grid-column: auto; width: 62%; height: 24rem; margin: 1rem 0 0 auto; }
+      .intro-note { grid-column: auto; margin: -4.5rem 0 0; max-width: 13ch; }
+      .gallery-images { width: 130vw; height: 64vh; bottom: -5vh; }
+      .gallery-images img { width: 28%; height: 66%; }
+      .gallery-images .gallery-left { left: 0; }
+      .gallery-images .gallery-center { left: 36%; width: 32%; height: 82%; }
+      .gallery-images .gallery-right { right: 0; }
+      .about-grid, .light-room, .closing-field { grid-template-columns: 1fr; }
+      .about-figure img { height: 62vw; }
+      .about-caption { position: static; width: 100%; }
+      .garden-card { min-height: 460px; }
+      .light-copy h2 { max-width: 8ch; }
+      .light-image { order: -1; }
+      .light-image img { height: 70svh; }
+      .triptych-row { grid-template-columns: 2fr 1fr; }
+      .triptych-row img { height: 25svh; }
+      .triptych-row img:first-child { grid-column: 1 / -1; height: 38svh; }
+      .footer-columns { grid-template-columns: 1fr 1fr; row-gap: 2rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+      .js .reveal, .js .stagger > * { opacity: 1; transform: none; }
+      .hero-image { clip-path: inset(0); transform: none; }
+      .hero-stage::after { opacity: .2; }
+      .hero-copy, .hero-note { color: #f2f2e9; }
+      .hero-copy { opacity: 1 !important; transform: none !important; }
+    }
+  </style>
+</head>
+<body data-mood="dawn">
+  <nav class="site-nav" aria-label="Primary navigation">
+    <a class="wordmark" href="#top">The Garden</a>
+    <div class="nav-links">
+      <a href="#garden">The garden</a>
+      <a href="#light">Change the light</a>
+      <a href="#works">Works</a>
+    </div>
+    <button class="menu-toggle" type="button" aria-expanded="false">Menu</button>
+  </nav>
+
+  <main id="top">
+    <section class="hero-opening" aria-labelledby="hero-title">
+      <div class="hero-stage">
+        <img class="hero-image" src="assets/water-lilies-1906.jpg" width="2000" height="1921" alt="Claude Monet's Water Lilies, 1906" fetchpriority="high">
+        <p class="hero-note">A living digital garden inspired by Monet's pond.<span>Giverny, France · 1906—today</span></p>
+        <div class="hero-copy">
+          <h1 class="hero-title" id="hero-title">The Garden<br>in light</h1>
+          <div>
+            <p class="hero-support">A quiet, interactive gallery where <em>water, flowers and time</em> move together.</p>
+            <a class="hero-action" href="#garden">Enter the garden</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section intro" id="garden" aria-labelledby="intro-title">
+      <img class="intro-image reveal" src="assets/artists-house-argenteuil.jpg" width="2000" height="1634" alt="Monet's garden at the artist's house at Argenteuil">
+      <div class="intro-copy reveal" id="intro-title">
+        <p>Some gardens are designed to be walked through. This one is designed to be felt: a brushstroke of blue, a flower held in the water, a little more day arriving with every scroll.</p>
+      </div>
+      <p class="intro-note reveal">The Garden treats a painting as a place, not a picture. Move slowly. Let the colour settle.</p>
+    </section>
+
+    <section class="gallery" id="works" aria-labelledby="gallery-title">
+      <div class="gallery-stage">
+        <h2 class="gallery-heading">Three views of one pond</h2>
+        <p class="gallery-lead">Water lilies, a bridge, and the space between looking and seeing.</p>
+        <div class="gallery-images" aria-hidden="true">
+          <img class="gallery-left" src="assets/poppy-field-giverny.jpg" width="2000" height="1299" alt="Monet's Poppy Field at Giverny">
+          <img class="gallery-center" src="assets/water-lily-pond-1900.jpg" width="2000" height="1778" alt="Monet's Water Lily Pond, 1900">
+          <img class="gallery-right" src="assets/irises-1914.jpg" width="2000" height="1997" alt="Monet's Irises, 1914–17">
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" aria-labelledby="about-title">
+      <h2 class="about-head reveal" id="about-title">A place made of colour</h2>
+      <p class="about-lead reveal">The garden is a study in attention: a green made warmer by rose, a blue held still by shadow, a path that only appears once you stay.</p>
+      <div class="about-grid">
+        <figure class="about-figure reveal">
+          <img src="assets/seine-giverny-mist.jpg" width="2000" height="1941" alt="Monet's pale mist over the Seine near Giverny">
+          <figcaption class="about-caption">“I must have flowers, always, and always.”<br><small>— Claude Monet</small></figcaption>
+        </figure>
+        <div class="garden-card reveal">
+          <svg viewBox="0 0 240 180" role="img" aria-label="A simple map of a pond and its path">
+            <path d="M29 137c35-23 29-76 84-86 54-10 60 24 99 16 17-3 27-12 33-22M10 103c39 8 58 25 93 16 37-10 48-41 89-42 20 0 33 8 43 18M42 160c33-15 41-37 75-43 31-6 60 12 104 1"/>
+            <circle cx="130" cy="92" r="7"/>
+          </svg>
+          <p>Follow the colour, not the path. The pond will meet you there.</p>
+          <dl class="facts">
+            <div><dt>Light</dt><dd>ever-changing</dd></div>
+            <div><dt>Water</dt><dd>still, moving</dd></div>
+            <div><dt>Season</dt><dd>always in bloom</dd></div>
+            <div><dt>Distance</dt><dd>one slow scroll</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="section light-room" id="light" aria-labelledby="light-title">
+      <div class="light-copy reveal">
+        <h2 id="light-title">Choose the hour</h2>
+        <p>The same garden changes its voice as the day passes. Choose a light and watch the pond answer.</p>
+        <div class="mood-switcher" aria-label="Choose the garden light">
+          <button type="button" data-set-mood="dawn" class="is-active">Dawn</button>
+          <button type="button" data-set-mood="noon">Noon</button>
+          <button type="button" data-set-mood="dusk">Dusk</button>
+        </div>
+      </div>
+      <figure class="light-image reveal">
+        <img src="assets/water-lilies-1906.jpg" width="2000" height="1921" alt="Water lilies floating across a blue pond">
+        <figcaption id="mood-caption">Dawn · a cool blue before the first bird.</figcaption>
+      </figure>
+    </section>
+
+    <section class="triptych" aria-labelledby="closing-title">
+      <div class="triptych-row">
+        <img src="assets/water-lilies-1906.jpg" width="2000" height="1921" alt="Detail of water lilies on blue water" loading="lazy">
+        <img src="assets/bank-of-seine.jpg" width="2000" height="1616" alt="The bank of the Seine under a broad tree" loading="lazy">
+        <img src="assets/artists-house-argenteuil.jpg" width="2000" height="1634" alt="A garden path at Monet's artist house" loading="lazy">
+      </div>
+      <div class="closing-field">
+        <h2 id="closing-title">Stay until the picture begins to move. <a href="#top">Return to the light</a>.</h2>
+        <p>The Garden is an independent digital artwork. Paintings by Claude Monet are held in the public domain; image files courtesy of the Art Institute of Chicago.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-columns">
+      <p><strong>The Garden</strong><span>A living gallery in changing light.</span></p>
+      <p><strong>Explore</strong><span><a href="#garden">The garden</a><br><a href="#light">Change the light</a><br><a href="#works">Works</a></span></p>
+      <p><strong>At the source</strong><span>Claude Monet<br>1840—1926<br>Giverny, France</span></p>
+      <p><strong>Image credits</strong><span><a href="https://www.artic.edu/" target="_blank" rel="noreferrer">Art Institute of Chicago</a><br>Public domain works</span></p>
+    </div>
+    <p class="footer-close">blossoming，that'it!</p>
+    <p class="footer-legal">Made for slow looking · © 2026 The Garden</p>
+  </footer>
+
+  <script src="assets/gsap.min.js"></script>
+  <script src="assets/ScrollTrigger.min.js"></script>
+  <script>
+    document.documentElement.classList.add('js');
+    gsap.registerPlugin(ScrollTrigger);
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const nav = document.querySelector('.site-nav');
+    const menu = document.querySelector('.menu-toggle');
+    menu.addEventListener('click', () => {
+      const open = nav.classList.toggle('menu-open');
+      menu.setAttribute('aria-expanded', String(open));
+    });
+    document.querySelectorAll('.nav-links a').forEach((link) => link.addEventListener('click', () => {
+      nav.classList.remove('menu-open');
+      menu.setAttribute('aria-expanded', 'false');
+    }));
+
+    const moodCaption = document.querySelector('#mood-caption');
+    const moodCopy = {
+      dawn: 'Dawn · a cool blue before the first bird.',
+      noon: 'Noon · every leaf carrying its own small sun.',
+      dusk: 'Dusk · rose light resting on the water.'
+    };
+    document.querySelectorAll('[data-set-mood]').forEach((button) => button.addEventListener('click', () => {
+      const mood = button.dataset.setMood;
+      document.body.dataset.mood = mood;
+      moodCaption.textContent = moodCopy[mood];
+      document.querySelectorAll('[data-set-mood]').forEach((item) => item.classList.toggle('is-active', item === button));
+      gsap.fromTo('.light-image img', { scale: 1.035 }, { scale: 1, duration: .9, ease: 'power3.out', overwrite: true });
+    }));
+
+    if (!reduced) {
+      const heroTimeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.hero-opening', start: 'top top', end: '+=100%', scrub: 1,
+          onUpdate: (self) => nav.classList.toggle('is-on-photo', self.progress > .38)
+        }
+      });
+      heroTimeline.to('.hero-image', { clipPath: 'inset(0% 0% 0% 0%)', scale: 1, ease: 'none', duration: .72 }, 0)
+        .to('.hero-copy', { y: -80, autoAlpha: 0, ease: 'power2.out', duration: .36 }, .02)
+        .to('.hero-note', { y: -40, autoAlpha: 0, ease: 'power2.out', duration: .3 }, 0);
+
+      const galleryTimeline = gsap.timeline({
+        scrollTrigger: { trigger: '.gallery', start: 'top top', end: '+=115%', scrub: 1 }
+      });
+      galleryTimeline.to('.gallery-center', { yPercent: -56, scale: 1, ease: 'none', duration: 1 }, 0)
+        .to('.gallery-left', { yPercent: -64, xPercent: -12, rotation: 0, ease: 'none', duration: 1 }, 0)
+        .to('.gallery-right', { yPercent: -68, xPercent: 12, rotation: 0, ease: 'none', duration: 1 }, 0);
+    }
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: .12 });
+    document.querySelectorAll('.reveal, .stagger').forEach((el) => revealObserver.observe(el));
+
+    ScrollTrigger.create({
+      trigger: '.about', start: 'top 70%', end: 'bottom 30%', onEnter: () => nav.classList.add('is-light'), onLeaveBack: () => nav.classList.remove('is-light')
+    });
+    ScrollTrigger.create({
+      trigger: '.triptych', start: 'top 60%', end: 'bottom bottom', onEnter: () => nav.classList.add('is-light'), onLeaveBack: () => nav.classList.remove('is-light')
+    });
+    ScrollTrigger.create({
+      trigger: '.site-footer', start: 'top bottom', end: 'bottom top',
+      onEnter: () => nav.classList.add('is-hidden'),
+      onEnterBack: () => nav.classList.add('is-hidden'),
+      onLeaveBack: () => nav.classList.remove('is-hidden')
+    });
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+  </script>
+</body>
+</html>

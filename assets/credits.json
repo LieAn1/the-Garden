@@ -1,0 +1,15 @@
+{
+  "direction": "place-carries-it",
+  "seed": 1682914994,
+  "idea": "Monet's changing light becomes a scroll-opened window into a living digital garden.",
+  "liveThing": "Choose the hour to change the garden mood.",
+  "assets": [
+    {"file":"water-lilies-1906.jpg","title":"Water Lilies","artist":"Claude Monet","year":"1906","source":"Art Institute of Chicago","objectId":16568,"licence":"Public domain","sourceUrl":"https://www.artic.edu/artworks/16568/water-lilies"},
+    {"file":"water-lily-pond-1900.jpg","title":"Water Lily Pond","artist":"Claude Monet","year":"1900","source":"Art Institute of Chicago","objectId":87088,"licence":"Public domain","sourceUrl":"https://www.artic.edu/artworks/87088/water-lily-pond"},
+    {"file":"poppy-field-giverny.jpg","title":"Poppy Field (Giverny)","artist":"Claude Monet","year":"1890-91","source":"Art Institute of Chicago","objectId":4783,"licence":"Public domain","sourceUrl":"https://www.artic.edu/artworks/4783/poppy-field-giverny"},
+    {"file":"seine-giverny-mist.jpg","title":"Branch of the Seine near Giverny (Mist)","artist":"Claude Monet","year":"1897","source":"Art Institute of Chicago","objectId":16564,"licence":"Public domain","sourceUrl":"https://www.artic.edu/artworks/16564/branch-of-the-seine-near-giverny-mist"},
+    {"file":"irises-1914.jpg","title":"Irises","artist":"Claude Monet","year":"1914-17","source":"Art Institute of Chicago","objectId":4887,"licence":"Public domain","sourceUrl":"https://www.artic.edu/artworks/4887/irises"},
+    {"file":"bank-of-seine.jpg","title":"On the Bank of the Seine, Bennecourt","artist":"Claude Monet","year":"1868","source":"Art Institute of Chicago","objectId":81539,"licence":"Public domain","sourceUrl":"https://www.artic.edu/artworks/81539/on-the-bank-of-the-seine-bennecourt"},
+    {"file":"artists-house-argenteuil.jpg","title":"The Artist's House at Argenteuil","artist":"Claude Monet","year":"1873","source":"Art Institute of Chicago","objectId":16554,"licence":"Public domain","sourceUrl":"https://www.artic.edu/artworks/16554/the-artists-house-at-argenteuil"}
+  ]
+}
